@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: dealspot-dev
+  name: trend-board-config
+  labels:
+    part-of: dealspot
+    component: backend-server
+    name: trend-board
+    instance: trend-board-basic
+    version: "0.0.1"
+    managed-by: kubectl
+data:
+  SPRING_PROFILES_ACTIVE: "dev"

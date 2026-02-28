@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dealspot-dev
+  name: trend-board
+  labels:
+    part-of: dealspot
+    component: backend-server
+    name: trend-board
+    instance: trend-board-basic
+    version: "0.0.1"
+    managed-by: kubectl
+spec:
+  selector:
+    matchLabels:
+      part-of: dealspot
+      component: backend-server
+      name: trend-board
+      instance: trend-board-basic
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        part-of: dealspot
+        component: backend-server
+        name: trend-board
+        instance: trend-board-basic
+        version: "0.0.1"
+    spec:
+      containers:
+        - name: trend-board
+          image: sunghochacha/trend-board:10
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - configMapRef:
+                name: trend-board-config
+            - secretRef:
+                name: trend-board-secret
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            periodSeconds: 5
+            failureThreshold: 36
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 3

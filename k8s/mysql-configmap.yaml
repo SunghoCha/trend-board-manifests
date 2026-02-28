@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: dealspot-dev
+  name: mysql-config
+  labels:
+    part-of: dealspot
+    component: database
+    name: mysql
+    instance: mysql-basic
+    version: "8.0"
+    managed-by: kubectl
+data:
+  MYSQL_DATABASE: "board_dev"

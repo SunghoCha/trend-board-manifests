@@ -1,0 +1,13 @@
+# kind 클러스터 설정
+# control-plane 1개 + worker 2개 (EKS 구조 모사)
+# NodePort 30080을 호스트에서 접근할 수 있도록 포트 매핑
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 30080
+        protocol: TCP
+  - role: worker
+  - role: worker

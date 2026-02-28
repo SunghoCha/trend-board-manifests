@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dealspot-dev
+  name: mysql
+  labels:
+    part-of: dealspot
+    component: database
+    name: mysql
+    instance: mysql-basic
+    version: "8.0"
+    managed-by: kubectl
+spec:
+  selector:
+    matchLabels:
+      part-of: dealspot
+      component: database
+      name: mysql
+      instance: mysql-basic
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        part-of: dealspot
+        component: database
+        name: mysql
+        instance: mysql-basic
+        version: "8.0"
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args:
+            - "--character-set-server=utf8mb4"
+            - "--collation-server=utf8mb4_unicode_ci"
+          ports:
+            - containerPort: 3306
+              name: mysql
+          envFrom:
+            - configMapRef:
+                name: mysql-config
+            - secretRef:
+                name: mysql-secret
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            periodSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-data
+          emptyDir: {}
