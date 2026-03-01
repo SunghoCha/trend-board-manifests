@@ -1,0 +1,42 @@
+# trend-board Helm 차트 기본값
+# Jenkins에서 --set image.tag=BUILD_NUMBER로 이미지 태그를 주입한다.
+
+replicaCount: 1
+
+image:
+  repository: sunghochacha/trend-board
+  pullPolicy: Always
+  # 기본값은 Chart.yaml의 appVersion을 사용한다.
+  # Jenkins에서 --set image.tag=BUILD_NUMBER로 오버라이드한다.
+  tag: ""
+
+namespace: dealspot-dev
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: http
+  nodePort: 30080
+
+probes:
+  path: /actuator/health
+  port: 8080
+  startup:
+    periodSeconds: 5
+    failureThreshold: 36
+  readiness:
+    periodSeconds: 10
+    failureThreshold: 3
+  liveness:
+    periodSeconds: 10
+    failureThreshold: 3
+
+configmap:
+  data:
+    SPRING_PROFILES_ACTIVE: "dev"
+
+secret:
+  data:
+    DB_URL: "jdbc:mysql://mysql:3306/board_dev?useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true"
+    DB_USERNAME: "root"
+    DB_PASSWORD: "root"
